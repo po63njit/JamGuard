@@ -1,6 +1,6 @@
 # JamGuard
 
-Portable anti-jam GNSS receiver senior capstone repository.
+Portable anti-jam GNSS receiver repository.
 
 ## Purpose
 JamGuard is a portable multi-antenna anti-jam GNSS prototype built around:
