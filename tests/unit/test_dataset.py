@@ -1,19 +1,19 @@
 import numpy as np
 
-from jamguard.data.models import CaptureMetadata, ChannelData, MultiChannelCapture
+from jamguard.data.models import CaptureMetadata, MultiChannelCapture
 
 
-def test_multichannel_matrix_shape() -> None:
-    metadata = CaptureMetadata(
-        capture_id="x",
+def test_multichannel_shape() -> None:
+    md = CaptureMetadata(
         sample_rate_hz=1.0,
         center_frequency_hz=1.0,
-        channel_labels=["a", "b"],
+        array_radius_m=0.1,
+        num_channels=5,
         channel_paths=[],
+        channel_labels=[f"ch{i}" for i in range(5)],
+        reference_channel="ch0",
     )
-    channels = [
-        ChannelData("a", np.ones(8, dtype=np.complex64), 1.0, 1.0),
-        ChannelData("b", np.ones(8, dtype=np.complex64), 1.0, 1.0),
-    ]
-    capture = MultiChannelCapture(metadata=metadata, channels=channels)
-    assert capture.as_matrix().shape == (2, 8)
+    md.channel_paths = [md.output_dir / f"ch{i}.cf32" for i in range(5)]
+    data = np.zeros((5, 128), dtype=np.complex64)
+    cap = MultiChannelCapture(metadata=md, data=data)
+    assert cap.num_samples == 128

@@ -1,19 +1,17 @@
 """JamGuard offline GNSS array analysis package."""
 
-from .data.models import (
-    AnalysisResult,
+from jamguard.data.models import (
     BeamformingResult,
     CalibrationResult,
     CaptureMetadata,
-    ChannelData,
+    ChannelMetrics,
     MultiChannelCapture,
 )
 
 __all__ = [
-    "AnalysisResult",
     "BeamformingResult",
     "CalibrationResult",
     "CaptureMetadata",
-    "ChannelData",
+    "ChannelMetrics",
     "MultiChannelCapture",
 ]

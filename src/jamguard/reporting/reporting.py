@@ -1,16 +1,13 @@
-"""Generate lightweight report artifacts for capstone deliverables."""
+"""Run summary output utilities."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
 
-from jamguard.data.models import AnalysisResult
 
-
-def write_markdown_summary(result: AnalysisResult, output_path: Path) -> None:
-    """Write analysis metrics to a markdown report file."""
-    lines = [f"# {result.name}", "", "## Metrics"]
-    lines.extend(f"- **{k}**: {v:.6g}" for k, v in sorted(result.metrics.items()))
+def write_json_summary(payload: dict[str, Any], output_path: Path) -> None:
+    """Write run summary dictionary as JSON file."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    # TODO: export capstone-ready figures and references.
+    output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")

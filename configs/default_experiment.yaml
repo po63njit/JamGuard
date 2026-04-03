@@ -1,20 +1,15 @@
-name: default_experiment
-description: Initial JamGuard offline analysis configuration.
-paths:
-  data_root: data
-  results_root: results
-array:
-  geometry: uca
-  num_elements: 5
-  radius_m: 0.076
-  channel_labels: [ch0, ch1, ch2, ch3, ch4]
-signal:
-  center_frequency_hz: 1575420000.0
-  sample_rate_hz: 2400000.0
-calibration:
-  reference_channel: ch0
-  method: cross_correlation
-beamforming:
-  method: delay_and_sum
-  look_az_deg: 0.0
-  look_el_deg: 0.0
+sample_rate_hz: 2400000.0
+center_frequency_hz: 1575420000.0
+array_radius_m: 0.076
+num_channels: 5
+channel_files:
+  - data/samples/ch0.cf32
+  - data/samples/ch1.cf32
+  - data/samples/ch2.cf32
+  - data/samples/ch3.cf32
+  - data/samples/ch4.cf32
+channel_labels: [ch0, ch1, ch2, ch3, ch4]
+reference_channel: ch0
+output_dir: results
+capture_id: krakensdr_capture_001
+notes: Replace channel_files with your simultaneous capture paths.
