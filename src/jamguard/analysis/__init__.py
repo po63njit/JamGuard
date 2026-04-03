@@ -1,3 +1,3 @@
-from .diagnostics import channel_health_summary
+from .diagnostics import compute_channel_metrics, metrics_table_text
 
-__all__ = ["channel_health_summary"]
+__all__ = ["compute_channel_metrics", "metrics_table_text"]

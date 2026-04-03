@@ -1,4 +1,4 @@
-from .loader import load_experiment_config
-from .models import ExperimentConfig
+from .loader import load_app_config
+from .models import AppConfig
 
-__all__ = ["ExperimentConfig", "load_experiment_config"]
+__all__ = ["AppConfig", "load_app_config"]

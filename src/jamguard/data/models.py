@@ -1,8 +1,8 @@
-"""Core data abstractions shared across analysis modules."""
+"""Core data models for JamGuard offline analysis."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -12,70 +12,109 @@ from numpy.typing import NDArray
 
 @dataclass(slots=True)
 class CaptureMetadata:
-    """Metadata for one simultaneous multichannel capture."""
+    """Metadata required to interpret a coherent multi-channel capture."""
 
-    capture_id: str
     sample_rate_hz: float
     center_frequency_hz: float
-    channel_labels: list[str]
+    array_radius_m: float
+    num_channels: int
     channel_paths: list[Path]
-    timestamp_utc: str | None = None
-    notes: str | None = None
-    extra: dict[str, Any] = field(default_factory=dict)
+    channel_labels: list[str]
+    reference_channel: str = "ch0"
+    output_dir: Path = Path("results")
+    capture_id: str = "capture"
+    notes: str = ""
 
-
-@dataclass(slots=True)
-class ChannelData:
-    """IQ data and derived annotations for one channel."""
-
-    label: str
-    iq: NDArray[np.complex64]
-    sample_rate_hz: float
-    center_frequency_hz: float
+    def validate(self) -> None:
+        """Validate metadata consistency and required fields."""
+        if self.num_channels <= 0:
+            raise ValueError("num_channels must be > 0")
+        if len(self.channel_paths) != self.num_channels:
+            raise ValueError("channel_paths length must equal num_channels")
+        if len(self.channel_labels) != self.num_channels:
+            raise ValueError("channel_labels length must equal num_channels")
+        if self.reference_channel not in self.channel_labels:
+            raise ValueError("reference_channel must be in channel_labels")
 
 
 @dataclass(slots=True)
 class MultiChannelCapture:
-    """Container that binds channel data and shared metadata."""
+    """In-memory coherent data with shape (channels, samples)."""
 
     metadata: CaptureMetadata
-    channels: list[ChannelData]
+    data: NDArray[np.complex64]
 
-    def as_matrix(self) -> NDArray[np.complex64]:
-        """Return stacked channel matrix with shape (num_channels, num_samples)."""
-        if not channels_have_equal_length(self.channels):
-            raise ValueError("All channels must have equal length.")
-        return np.vstack([ch.iq for ch in self.channels]).astype(np.complex64)
+    def __post_init__(self) -> None:
+        self.metadata.validate()
+        if self.data.ndim != 2:
+            raise ValueError("data must be 2D with shape (channels, samples)")
+        if self.data.shape[0] != self.metadata.num_channels:
+            raise ValueError("data channel axis must match metadata.num_channels")
+
+    @property
+    def num_samples(self) -> int:
+        return int(self.data.shape[1])
+
+    def channel_index(self, label: str) -> int:
+        return self.metadata.channel_labels.index(label)
+
+    def channel(self, label: str) -> NDArray[np.complex64]:
+        return self.data[self.channel_index(label)]
 
 
 @dataclass(slots=True)
-class AnalysisResult:
-    """Generic analysis result object for diagnostics/reporting."""
+class ChannelMetrics:
+    """Per-channel health and ranking metrics."""
 
-    name: str
-    metrics: dict[str, float]
-    artifacts: dict[str, Path] = field(default_factory=dict)
+    mean_power: dict[str, float]
+    rms: dict[str, float]
+    ranking: list[str]
+    preview: dict[str, list[float]]
 
 
 @dataclass(slots=True)
 class CalibrationResult:
-    """Per-channel calibration estimate."""
+    """Estimated relative complex calibration terms."""
 
     reference_channel: str
-    phase_offsets_rad: dict[str, float]
-    delay_offsets_s: dict[str, float]
-    amplitude_scales: dict[str, float]
+    complex_gain_by_channel: dict[str, complex]
+    phase_offset_rad_by_channel: dict[str, float]
+    amplitude_scale_by_channel: dict[str, float]
+    lag_samples_by_channel: dict[str, int]
+
+    def to_jsonable(self) -> dict[str, Any]:
+        """Return JSON-serializable representation."""
+        serial_gain = {
+            k: {"real": float(v.real), "imag": float(v.imag)}
+            for k, v in self.complex_gain_by_channel.items()
+        }
+        d = asdict(self)
+        d["complex_gain_by_channel"] = serial_gain
+        return d
+
+    @classmethod
+    def from_jsonable(cls, payload: dict[str, Any]) -> "CalibrationResult":
+        """Create a calibration result from JSON payload."""
+        gain = {
+            k: complex(v["real"], v["imag"])
+            for k, v in payload["complex_gain_by_channel"].items()
+        }
+        return cls(
+            reference_channel=payload["reference_channel"],
+            complex_gain_by_channel=gain,
+            phase_offset_rad_by_channel={k: float(v) for k, v in payload["phase_offset_rad_by_channel"].items()},
+            amplitude_scale_by_channel={k: float(v) for k, v in payload["amplitude_scale_by_channel"].items()},
+            lag_samples_by_channel={k: int(v) for k, v in payload["lag_samples_by_channel"].items()},
+        )
 
 
 @dataclass(slots=True)
 class BeamformingResult:
-    """Output of a beamforming operation."""
+    """Result of fixed beamforming operation."""
 
-    output_signal: NDArray[np.complex64]
+    azimuth_deg: float
     weights: NDArray[np.complex128]
+    output: NDArray[np.complex64]
+    input_mean_power: float
+    output_mean_power: float
     metadata: dict[str, Any] = field(default_factory=dict)
-
-
-def channels_have_equal_length(channels: list[ChannelData]) -> bool:
-    """Return True when all channel vectors have the same number of samples."""
-    return len({len(ch.iq) for ch in channels}) <= 1

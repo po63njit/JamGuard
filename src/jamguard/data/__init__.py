@@ -1,4 +1,17 @@
-from .dataset import CaptureDataset
-from .models import CaptureMetadata, ChannelData, MultiChannelCapture
+"""Data models and dataset abstractions."""
 
-__all__ = ["CaptureDataset", "CaptureMetadata", "ChannelData", "MultiChannelCapture"]
+from jamguard.data.models import (
+    BeamformingResult,
+    CalibrationResult,
+    CaptureMetadata,
+    ChannelMetrics,
+    MultiChannelCapture,
+)
+
+__all__ = [
+    "BeamformingResult",
+    "CalibrationResult",
+    "CaptureMetadata",
+    "ChannelMetrics",
+    "MultiChannelCapture",
+]

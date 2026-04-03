@@ -1,4 +1,3 @@
-from .psd import plot_psd
-from .time_domain import plot_iq_timeseries
+from .figures import plot_before_after_psd, plot_channel_power, plot_channel_psd
 
-__all__ = ["plot_psd", "plot_iq_timeseries"]
+__all__ = ["plot_channel_power", "plot_channel_psd", "plot_before_after_psd"]

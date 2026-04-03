@@ -1,57 +1,43 @@
-"""Configuration dataclasses for JamGuard experiments."""
+"""Configuration models for offline JamGuard runs."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
-from jamguard.utils.constants import (
-    DEFAULT_NUM_CHANNELS,
-    DEFAULT_SAMPLE_RATE_HZ,
-    GPS_L1_CENTER_HZ,
-    UCA_DEFAULT_RADIUS_M,
-)
+from jamguard.data.models import CaptureMetadata
 
 
 @dataclass(slots=True)
-class PathsConfig:
-    data_root: Path = Path("data")
-    results_root: Path = Path("results")
+class AppConfig:
+    """Top-level configuration parsed from YAML/TOML."""
 
+    sample_rate_hz: float
+    center_frequency_hz: float
+    array_radius_m: float
+    num_channels: int
+    channel_files: list[Path]
+    channel_labels: list[str]
+    reference_channel: str
+    output_dir: Path
+    capture_id: str = "capture"
+    notes: str = ""
 
-@dataclass(slots=True)
-class ArrayConfig:
-    geometry: str = "uca"
-    num_elements: int = DEFAULT_NUM_CHANNELS
-    radius_m: float = UCA_DEFAULT_RADIUS_M
-    channel_labels: list[str] = field(default_factory=lambda: [f"ch{i}" for i in range(DEFAULT_NUM_CHANNELS)])
-
-
-@dataclass(slots=True)
-class SignalConfig:
-    center_frequency_hz: float = GPS_L1_CENTER_HZ
-    sample_rate_hz: float = DEFAULT_SAMPLE_RATE_HZ
-
-
-@dataclass(slots=True)
-class CalibrationConfig:
-    reference_channel: str = "ch0"
-    method: str = "cross_correlation"
-
-
-@dataclass(slots=True)
-class BeamformingConfig:
-    method: str = "delay_and_sum"
-    look_az_deg: float = 0.0
-    look_el_deg: float = 0.0
-
-
-@dataclass(slots=True)
-class ExperimentConfig:
-    name: str
-    description: str = ""
-    paths: PathsConfig = field(default_factory=PathsConfig)
-    array: ArrayConfig = field(default_factory=ArrayConfig)
-    signal: SignalConfig = field(default_factory=SignalConfig)
-    calibration: CalibrationConfig = field(default_factory=CalibrationConfig)
-    beamforming: BeamformingConfig = field(default_factory=BeamformingConfig)
+    def to_capture_metadata(self, base_dir: Path) -> CaptureMetadata:
+        """Build capture metadata with resolved channel paths."""
+        resolved_files = [
+            (p if p.is_absolute() else (base_dir / p)).resolve() for p in self.channel_files
+        ]
+        output_dir = self.output_dir if self.output_dir.is_absolute() else (base_dir / self.output_dir)
+        return CaptureMetadata(
+            sample_rate_hz=self.sample_rate_hz,
+            center_frequency_hz=self.center_frequency_hz,
+            array_radius_m=self.array_radius_m,
+            num_channels=self.num_channels,
+            channel_paths=resolved_files,
+            channel_labels=self.channel_labels,
+            reference_channel=self.reference_channel,
+            output_dir=output_dir.resolve(),
+            capture_id=self.capture_id,
+            notes=self.notes,
+        )
