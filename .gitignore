@@ -1,38 +1,26 @@
-.DS_Store
-Thumbs.db
-.~lock*
-
 # Python
 __pycache__/
-*.pyc
-.pytest_cache/
-.mypy_cache/
+*.py[cod]
+*.so
 .venv/
 venv/
 
-# Jupyter
-.ipynb_checkpoints/
+# Tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Logs and temporary outputs
-*.log
-tmp/
-temp/
+# Data/results artifacts
+results/figures/*
+!results/figures/.gitkeep
+results/reports/*
+!results/reports/.gitkeep
+results/logs/*
+!results/logs/.gitkeep
 
-# Data captures and large artifacts
-software/captures/raw/
-software/captures/processed/
-tests/**/artifacts/
-reports/figures/generated/
-
-# FPGA and vendor build outputs
-software/fpga/build/
-software/fpga/output/
-software/fpga/libero/
-software/fpga/*.jou
-software/fpga/*.log
-software/fpga/*.str
-software/fpga/*.rpt
-
-# IDEs
-.idea/
+# OS/editor
+.DS_Store
 .vscode/
+.idea/
