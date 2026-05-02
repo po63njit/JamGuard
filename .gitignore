@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.cfile
+*.sigmf-data
+*.bin
+*.iq
+*.raw
+*.wav
+*.log
+data/raw/
+data/processed/
+results/figures/
+results/logs/
