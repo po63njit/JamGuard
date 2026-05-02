@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd ~/JamGuard
-source .venv/bin/activate
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+cd "$REPO_ROOT"
+if [[ -f .venv/bin/activate ]]; then source .venv/bin/activate; fi
 
 RUN_NAME="${RUN_NAME:-test_110}"
 CAPTURE_DIR="${CAPTURE_DIR:-/media/patryk/X31/test_110}"
@@ -16,8 +17,8 @@ AMPS_STR="${AMPS_STR:-3 8 16}"
 KEEP_CFILES="${KEEP_CFILES:-0}"
 RESET_SUMMARY="${RESET_SUMMARY:-1}"
 
-SUMMARY="results/tables/test_110_robust_sweep_180s.csv"
-LOG_ROOT="results/logs/test_110_robust_sweep_180s"
+SUMMARY="${SUMMARY:-results/tables/test_110_robust_sweep_180s.csv}"
+LOG_ROOT="${LOG_ROOT:-results/logs/test_110_robust_sweep_180s}"
 RUN_ROOT="$HOME/gnss_sdr_runs/test_110_robust_sweep_180s"
 
 mkdir -p "$PROC_ROOT" "$LOG_ROOT" "$RUN_ROOT" results/tables

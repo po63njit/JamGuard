@@ -30,3 +30,12 @@ python scripts/reports/make_master_results_table.py --run-name synth --lcmv-metr
 
 ## Safety
 Use only offline synthetic or fully conducted/shielded jammer tests. Do not radiate GNSS interference.
+
+
+## test_110 result snapshot (capstone)
+- Dataset: `/media/patryk/X31/test_110` (real 5-channel KrakenSDR capture, 2.4 MSPS).
+- 180 s LCMV output suppressed the controlled injected jammer bin by ~97.18 dB.
+- GNSS-SDR validation on 180 s LCMV output: tracking present, 119 NAV messages, position fix achieved.
+- Robust synthetic sweep (CW/chirp/wideband noise) summary is generated with `scripts/reports/analyze_test_110_robust_sweep_spectral.py`.
+
+See `docs/09_test_110_robust_sweep_workflow.md` for runbook, troubleshooting, and report-safe claim boundaries.
