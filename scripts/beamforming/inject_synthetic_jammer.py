@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import argparse, json
-from pathlib import Path
+from jamguard.workflow import inject_jammer
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('--input', default='')
-    ap.add_argument('--output', default='')
-    args=ap.parse_args()
-    print(f"[JamGuard] running {Path(__file__).name}")
-    print(f"input={args.input} output={args.output}")
-    if args.output:
-        out=Path(args.output); out.parent.mkdir(parents=True, exist_ok=True)
-        payload={"script":Path(__file__).name,"input":args.input}
-        if out.suffix.lower()=='.json':
-            out.write_text(json.dumps(payload, indent=2))
-        elif out.suffix.lower()=='.csv':
-            out.write_text('key,value\nscript,'+Path(__file__).name+'\n')
-        else:
-            out.write_text(str(payload))
-
-if __name__=='__main__':
-    main()
+    ap.add_argument('--input', required=True)
+    ap.add_argument('--output-dir', required=True)
+    ap.add_argument('--sample-rate', type=float, default=2_000_000)
+    ap.add_argument('--channels', type=int, default=5)
+    ap.add_argument('--pattern', default='ch{}.cfile')
+    ap.add_argument('--max-samples', type=int, default=None)
+    ap.add_argument('--force', action='store_true')
+    a=ap.parse_args()
+    print(json.dumps(inject_jammer(a.input,a.output_dir,a.sample_rate,channels=a.channels,pattern=a.pattern,max_samples=a.max_samples,force=a.force),indent=2))
+if __name__=='__main__': main()
