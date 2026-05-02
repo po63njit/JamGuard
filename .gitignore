@@ -38,3 +38,11 @@ src/*.egg-info/
 
 # Generated GNSS-SDR configs
 configs/gnss_sdr/test_*.conf
+
+# Local synthetic sanity-check outputs
+configs/gnss_sdr/synth_*.conf
+results/tables/synth_*.json
+results/tables/synth_*.csv
+
+# Large detailed coherence dumps
+results/tables/*window_coherence*.json
