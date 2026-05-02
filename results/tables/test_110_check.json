@@ -1,0 +1,32 @@
+[
+  {
+    "channel": 0,
+    "path": "/media/patryk/X31/test_110/ch0.cfile",
+    "samples": 1440000000,
+    "bytes": 11520000000
+  },
+  {
+    "channel": 1,
+    "path": "/media/patryk/X31/test_110/ch1.cfile",
+    "samples": 1440000000,
+    "bytes": 11520000000
+  },
+  {
+    "channel": 2,
+    "path": "/media/patryk/X31/test_110/ch2.cfile",
+    "samples": 1440000000,
+    "bytes": 11520000000
+  },
+  {
+    "channel": 3,
+    "path": "/media/patryk/X31/test_110/ch3.cfile",
+    "samples": 1440000000,
+    "bytes": 11520000000
+  },
+  {
+    "channel": 4,
+    "path": "/media/patryk/X31/test_110/ch4.cfile",
+    "samples": 1440000000,
+    "bytes": 11520000000
+  }
+]
