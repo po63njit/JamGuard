@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import argparse, json
 from pathlib import Path
+from jamguard.workflow import multi_window
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('--input', default='')
-    ap.add_argument('--output', default='')
-    args=ap.parse_args()
-    print(f"[JamGuard] running {Path(__file__).name}")
-    print(f"input={args.input} output={args.output}")
-    if args.output:
-        out=Path(args.output); out.parent.mkdir(parents=True, exist_ok=True)
-        payload={"script":Path(__file__).name,"input":args.input}
-        if out.suffix.lower()=='.json':
-            out.write_text(json.dumps(payload, indent=2))
-        elif out.suffix.lower()=='.csv':
-            out.write_text('key,value\nscript,'+Path(__file__).name+'\n')
-        else:
-            out.write_text(str(payload))
+    ap.add_argument('--input', required=True)
+    ap.add_argument('--output', required=True)
+    ap.add_argument('--sample-rate', type=float, default=2_000_000)
+    ap.add_argument('--channels', type=int, default=5)
+    ap.add_argument('--pattern', default='ch{}.cfile')
+    ap.add_argument('--max-samples', type=int, default=None)
+    a=ap.parse_args()
+    rows=multi_window(a.input, sample_rate=a.sample_rate, channels=a.channels, pattern=a.pattern, max_samples=a.max_samples) if 'multi_window'!='check_capture_files' else multi_window(a.input, channels=a.channels, pattern=a.pattern)
+    out=Path(a.output); out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(rows, indent=2))
 
 if __name__=='__main__':
     main()
