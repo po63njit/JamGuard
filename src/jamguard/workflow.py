@@ -2,6 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import csv
+import warnings
 import numpy as np
 from .io.cfile import load_multichannel_capture, write_complex64_cfile, cfile_sample_count
 from .dsp.metrics import summarize_channel
@@ -80,16 +81,34 @@ def run_lcmv(input_dir: str | Path, output_dir: str | Path, metrics_csv: str | P
     if out.exists() and any(out.iterdir()) and not force:
         raise FileExistsError(f"output exists, use --force: {out}")
     X = load_multichannel_capture(input_dir, pattern=pattern, channels=channels, count=max_samples)
+
+    lengths = np.array([X[ch].shape[0] for ch in range(channels)], dtype=int)
+    if np.any(lengths != lengths[0]):
+        warnings.warn(f"channel sample counts differ: {lengths.tolist()}")
+    powers = np.mean(np.abs(X) ** 2, axis=1)
+    med_power = float(np.median(powers))
+    if med_power > 0:
+        ratio = np.max(powers) / med_power
+        if ratio > 10.0:
+            warnings.warn(f"channel power imbalance detected, max/median={ratio:.2f}")
     R = covariance_matrix(X, diagonal_loading=1e-3)
     c_look = np.ones(channels, dtype=np.complex64)
     c_null = np.exp(1j * np.linspace(0, np.pi/2, channels)).astype(np.complex64)
     C = np.column_stack([c_look, c_null])
     f = np.array([1+0j, 0+0j], dtype=np.complex64)
+    cond = float(np.linalg.cond(R))
+    if not np.isfinite(cond) or cond > 1e8:
+        warnings.warn(f"covariance matrix is ill-conditioned (cond={cond:.3e})")
     w = lcmv_weights(R, C, f)
     y = apply_weights(X, w)
     out.mkdir(parents=True, exist_ok=True)
     write_complex64_cfile(out / "lcmv_ch0ref_null.cfile", y)
-    metrics = {"samples": int(len(y)), "output_power_db": float(10*np.log10(np.mean(np.abs(y)**2)+1e-12)), "sample_rate": sample_rate}
+    output_power = float(np.mean(np.abs(y)**2))
+    if len(y) == 0:
+        warnings.warn("LCMV output file would be empty")
+    elif output_power < 1e-10:
+        warnings.warn(f"LCMV output near-zero power: {output_power:.3e}")
+    metrics = {"samples": int(len(y)), "output_power_db": float(10*np.log10(output_power+1e-12)), "sample_rate": sample_rate, "covariance_condition_number": cond}
     (out / "weights.json").write_text(json.dumps({"weights": [{"re": float(np.real(v)), "im": float(np.imag(v))} for v in w], "metrics": metrics}, indent=2))
     mpath = Path(metrics_csv); mpath.parent.mkdir(parents=True, exist_ok=True)
     with mpath.open("w", newline="") as fcsv:
