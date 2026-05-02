@@ -51,6 +51,7 @@ def main():
     ap.add_argument("--pattern", default="ch{}.cfile")
     ap.add_argument("--max-samples", type=int, default=0)
     ap.add_argument("--block-samples", type=int, default=2_000_000)
+    ap.add_argument("--dry-run", action="store_true", help="Validate inputs and print manifest without writing output cfiles.")
     ap.add_argument("--kind", choices=["cw", "multitone", "chirp", "wideband_noise", "pulsed_cw", "two_cw"], required=True)
     ap.add_argument("--amplitude", type=float, required=True)
     ap.add_argument("--offset-hz", type=float, default=1500.0)
@@ -86,6 +87,13 @@ def main():
     total = available if args.max_samples <= 0 else min(args.max_samples, available)
 
     rng = np.random.default_rng(args.seed)
+
+    if args.block_samples <= 0:
+        raise SystemExit("--block-samples must be > 0")
+
+    if args.dry_run:
+        print(json.dumps({"samples": total, "duration_s": total/args.sample_rate, "channels": args.channels, "kind": args.kind}, indent=2))
+        return
 
     infiles = [open(p, "rb") for p in in_paths]
     outfiles = [open(out_dir / args.pattern.format(ch), "wb") for ch in range(args.channels)]
