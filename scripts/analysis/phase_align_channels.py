@@ -5,12 +5,12 @@ from jamguard.workflow import phase_align
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('--input', required=True)
+    ap.add_argument('--input-dir', required=True)
     ap.add_argument('--output-dir', required=True)
     ap.add_argument('--channels', type=int, default=5)
     ap.add_argument('--pattern', default='ch{}.cfile')
     ap.add_argument('--max-samples', type=int, default=None)
     ap.add_argument('--force', action='store_true')
     a=ap.parse_args()
-    print(json.dumps(phase_align(a.input,a.output_dir,channels=a.channels,pattern=a.pattern,max_samples=a.max_samples,force=a.force),indent=2))
+    print(json.dumps(phase_align(a.input_dir,a.output_dir,channels=a.channels,pattern=a.pattern,max_samples=a.max_samples,force=a.force),indent=2))
 if __name__=='__main__': main()
