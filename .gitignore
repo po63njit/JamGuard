@@ -13,3 +13,11 @@ data/raw/
 data/processed/
 results/figures/
 results/logs/
+
+# Large SDR/generated IQ data
+*.cfile
+*.cfile*
+/media/
+/data/
+/captures/
+/processed/
