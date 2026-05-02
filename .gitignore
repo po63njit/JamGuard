@@ -35,3 +35,6 @@ results/packages/
 # Python packaging/build artifacts
 src/*.egg-info/
 *.egg-info/
+
+# Generated GNSS-SDR configs
+configs/gnss_sdr/test_*.conf
