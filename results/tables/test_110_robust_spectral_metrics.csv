@@ -1,0 +1,10 @@
+case_id,jammer_kind,amplitude,duration_s,jammed_time_power_db,lcmv_time_power_db,time_power_reduction_db,jammed_tone_1500_db,lcmv_tone_1500_db,tone_1500_suppression_db,band_1500_pm5k_suppression_db,baseband_pm50k_suppression_db,wide_pm500k_suppression_db,fullband_avg_psd_reduction_db,jammed_max_psd_db,lcmv_max_psd_db,max_psd_reduction_db,lcmv_rms,windows_per_file,primary_metric,primary_suppression_db
+test_110_cw_amp3_180s,cw,3,180.0,9.546,-21.978,31.524,61.823,-22.325,84.148,54.729,44.699,35.003,31.573,61.823,-6.679,68.503,0.079637,8,tone_1500_suppression_db,84.148
+test_110_cw_amp8_180s,cw,8,180.0,18.062,-22.21,40.272,70.343,-22.392,92.735,63.449,53.436,43.739,40.315,70.343,-7.2,77.543,0.077539,8,tone_1500_suppression_db,92.735
+test_110_cw_amp16_180s,cw,16,180.0,24.083,-22.248,46.33,76.363,-22.334,98.697,69.495,59.49,49.795,46.373,76.363,-7.238,83.601,0.077199,8,tone_1500_suppression_db,98.697
+test_110_chirp_amp3_180s,chirp,3,180.0,9.546,-21.981,31.527,19.243,-22.301,41.544,40.946,43.66,35.006,31.576,25.696,-6.717,32.413,0.079604,8,wide_pm500k_suppression_db,35.006
+test_110_chirp_amp8_180s,chirp,8,180.0,18.062,-22.213,40.275,27.77,-22.388,50.158,49.668,52.398,43.741,40.318,34.207,-7.218,41.424,0.077508,8,wide_pm500k_suppression_db,43.741
+test_110_chirp_amp16_180s,chirp,16,180.0,24.083,-22.248,46.33,33.792,-22.333,56.126,55.713,58.449,49.795,46.373,40.225,-7.238,47.463,0.077198,8,wide_pm500k_suppression_db,49.795
+test_110_wideband_noise_amp3_180s,wideband_noise,3,180.0,9.549,5.641,3.908,7.653,4.758,2.895,3.826,3.542,3.893,3.968,15.05,24.682,-9.632,1.914443,8,fullband_avg_psd_reduction_db,3.968
+test_110_wideband_noise_amp8_180s,wideband_noise,8,180.0,18.065,-22.355,40.42,16.13,-22.511,38.641,39.879,39.775,40.066,40.466,23.577,-7.66,31.237,0.076252,8,fullband_avg_psd_reduction_db,40.466
+test_110_wideband_noise_amp16_180s,wideband_noise,16,180.0,24.085,-22.276,46.362,22.138,-22.369,44.508,45.829,45.721,46.015,46.407,29.6,-7.321,36.921,0.076945,8,fullband_avg_psd_reduction_db,46.407
