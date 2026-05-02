@@ -21,3 +21,17 @@ results/logs/
 /data/
 /captures/
 /processed/
+
+# GNSS-SDR generated runtime outputs
+GSDR*
+nmea_pvt.nmea
+pvt.dat_*.geojson
+pvt.dat_*.gpx
+pvt.dat_*.kml
+
+# Generated result packages / archives
+results/packages/
+
+# Python packaging/build artifacts
+src/*.egg-info/
+*.egg-info/
